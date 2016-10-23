@@ -6,9 +6,13 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.UUID;
+
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
+import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 
@@ -32,19 +36,70 @@ public class ElasticSearchCRUD {
         return indexResponse;
     }
 
-    public static Response createRecordWithJsonString(String jsonString, RestClient restClient, String schema, String documentName) throws UnknownHostException, JsonProcessingException {
+    public static Response createRecordWithObject(Object object, RestClient restClient, String schema, String documentName, Header... headers) throws IOException {
+        HttpEntity entity = new NStringEntity(getJson(object), ContentType.APPLICATION_JSON);
+        Response  indexResponse = restClient.performRequest(
+                "PUT",
+                "/"+ schema+"/" + documentName +"/" + UUID.randomUUID().toString(),
+                Collections.<String, String>emptyMap(),
+                //assume that the documents are stored in an entities array
+                entity, headers
+        );
+
+        return indexResponse;
+    }
+
+    public static Response createRecordWithObject(Object object, RestClient restClient, String schema, String documentName,
+                                                      HttpAsyncResponseConsumer<HttpResponse> responseConsumer, Header... headers) throws IOException {
+        HttpEntity entity = new NStringEntity(getJson(object), ContentType.APPLICATION_JSON);
+        Response  indexResponse = restClient.performRequest(
+                "PUT",
+                "/"+ schema+"/" + documentName +"/" + UUID.randomUUID().toString(),
+                Collections.<String, String>emptyMap(),
+                //assume that the documents are stored in an entities array
+                entity, responseConsumer, headers
+        );
+
+        return indexResponse;
+    }
+
+    public static Response createRecordWithJsonString(String jsonString, RestClient restClient, String schema, String documentName) throws IOException {
         HttpEntity entity = new NStringEntity(jsonString, ContentType.APPLICATION_JSON);
-        Response indexResponse = null;
-        try {
-            indexResponse = restClient.performRequest(
+        Response  indexResponse = restClient.performRequest(
                     "PUT",
                     "/"+ schema+"/" + documentName +"/" + UUID.randomUUID().toString(),
                     Collections.<String, String>emptyMap(),
                     //assume that the documents are stored in an entities array
                     entity
             );
-        } catch (IOException ex) {
-        }
+
+        return indexResponse;
+    }
+
+    public static Response createRecordWithJsonString(String jsonString, RestClient restClient, String schema, String documentName, Header... headers) throws IOException {
+        HttpEntity entity = new NStringEntity(jsonString, ContentType.APPLICATION_JSON);
+        Response  indexResponse = restClient.performRequest(
+                "PUT",
+                "/"+ schema+"/" + documentName +"/" + UUID.randomUUID().toString(),
+                Collections.<String, String>emptyMap(),
+                //assume that the documents are stored in an entities array
+                entity, headers
+        );
+
+        return indexResponse;
+    }
+
+    public static Response createRecordWithJsonString(String jsonString, RestClient restClient, String schema, String documentName,
+                                                      HttpAsyncResponseConsumer<HttpResponse> responseConsumer, Header... headers) throws IOException {
+        HttpEntity entity = new NStringEntity(jsonString, ContentType.APPLICATION_JSON);
+        Response  indexResponse = restClient.performRequest(
+                "PUT",
+                "/"+ schema+"/" + documentName +"/" + UUID.randomUUID().toString(),
+                Collections.<String, String>emptyMap(),
+                //assume that the documents are stored in an entities array
+                entity, responseConsumer, headers
+        );
+
         return indexResponse;
     }
 
@@ -63,4 +118,6 @@ public class ElasticSearchCRUD {
 
         return response;
     }
+
+
 }
