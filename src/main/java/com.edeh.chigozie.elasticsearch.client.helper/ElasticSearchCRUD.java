@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
@@ -18,13 +16,29 @@ import org.elasticsearch.client.RestClient;
  * Created by kingsley on 10/23/16.
  */
 public class ElasticSearchCRUD {
-    public static Response createRecord(Object object, RestClient restClient, String documentName) throws UnknownHostException, JsonProcessingException {
+    public static Response createRecordWithObject(Object object, RestClient restClient, String schema, String documentName) throws UnknownHostException, JsonProcessingException {
         HttpEntity entity = new NStringEntity(getJson(object), ContentType.APPLICATION_JSON);
         Response indexResponse = null;
         try {
             indexResponse = restClient.performRequest(
                     "PUT",
-                    "/ocs/" + documentName +"/" + UUID.randomUUID().toString(),
+                    "/"+ schema+"/" + documentName +"/" + UUID.randomUUID().toString(),
+                    Collections.<String, String>emptyMap(),
+                    //assume that the documents are stored in an entities array
+                    entity
+            );
+        } catch (IOException ex) {
+        }
+        return indexResponse;
+    }
+
+    public static Response createRecordWithJsonString(String jsonString, RestClient restClient, String schema, String documentName) throws UnknownHostException, JsonProcessingException {
+        HttpEntity entity = new NStringEntity(jsonString, ContentType.APPLICATION_JSON);
+        Response indexResponse = null;
+        try {
+            indexResponse = restClient.performRequest(
+                    "PUT",
+                    "/"+ schema+"/" + documentName +"/" + UUID.randomUUID().toString(),
                     Collections.<String, String>emptyMap(),
                     //assume that the documents are stored in an entities array
                     entity
@@ -42,9 +56,9 @@ public class ElasticSearchCRUD {
         return jsonString;
     }
 
-    public static Response search(RestClient restClient, String key, String value) throws IOException {
+    public static Response search(RestClient restClient, String schema, String key, String value) throws IOException {
         Response response = null;
-            response = restClient.performRequest("GET", "/ocs/_search",
+            response = restClient.performRequest("GET", "/"+schema+"/_search",
                     Collections.singletonMap(key, value));
 
         return response;
