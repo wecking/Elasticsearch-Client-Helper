@@ -12,6 +12,10 @@ import java.net.UnknownHostException;
 public class ElasticSearchClient {
     private static RestClient restClient = null;
 
+
+    /*
+    * Get RestClient connection to the database
+    * */
     public static RestClient getHTTPClient(String ip, int port) throws UnknownHostException {
         if (restClient != null) {
             return restClient;
@@ -22,6 +26,9 @@ public class ElasticSearchClient {
         return restClient;
     }
 
+    /*
+    * Close passed in parameters
+    * */
     public static void closeConnections(RestClient restClient){
         try {
             restClient.close();

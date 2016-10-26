@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-mvn clean deploy</actionName>
+            <displayName>mvn clean deploy</displayName>
+            <goals>
+                <goal>mvn</goal>
+                <goal>clean</goal>
+                <goal>deploy:deploy</goal>
+            </goals>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+            <activatedProfiles>
+                <activatedProfile>mvn</activatedProfile>
+                <activatedProfile>clean</activatedProfile>
+                <activatedProfile>deploy</activatedProfile>
+            </activatedProfiles>
+        </action>
+    </actions>
